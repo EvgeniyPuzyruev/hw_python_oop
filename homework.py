@@ -86,7 +86,7 @@ class SportsWalking(Training):
     def get_spent_calories(self):
         return ((self.S_WALK_COEF_1 * self.weight + (self.get_mean_speed() ** 2
                 / self.height / super().SM_IN_M) * self.S_WALK_COEF_2
-                * self.weight) * self.duration * super().M_IN_H)
+            * self.weight) * self.duration * super().M_IN_H)
 
 
 class Swimming(Training):
@@ -122,8 +122,7 @@ def read_package(workout_type: str, data: list) -> Training:
     training_type_dict = {'SWM': Swimming,
                           'RUN': Running,
                           'WLK': SportsWalking}
-    if workout_type in training_type_dict:
-        return training_type_dict[workout_type](*data)
+    return training_type_dict[workout_type](*data)
 
 
 def main(training: Training) -> None:
