@@ -7,7 +7,7 @@ class InfoMessage:
         self.speed = speed
         self.calories = calories
 
-    def get_message(self):
+    def get_message(self) -> str:
         return (f'Тип тренировки: {self.training_type}; '
                 f'Длительность: {self.duration}; '
                 f'Дистанция: {self.distance}; '
@@ -50,7 +50,7 @@ class Training:
         training_type = self.__class__.__name__
         distance = self.get_distance()
         speed = self.get_mean_speed()
-        calories = self.get_spent_calories()
+        calories = round(self.get_spent_calories(), 3)
 
         return InfoMessage(training_type, self.duration,
                            distance, speed, calories)
@@ -84,9 +84,9 @@ class SportsWalking(Training):
         return self.action * super().LEN_STEP / self.S_IN_H
 
     def get_spent_calories(self):
-        return (self.S_WALK_COEF_1 * self.weight + (self.get_mean_speed() ** 2
-                / (self.height / super().SM_IN_M) * self.S_WALK_COEF_2
-                * self.weight) * (self.duration * super().M_IN_H))
+        return ((self.S_WALK_COEF_1 * self.weight + (self.get_mean_speed() ** 2
+                / self.height / super().SM_IN_M) * self.S_WALK_COEF_2
+                * self.weight) * self.duration * super().M_IN_H)
 
 
 class Swimming(Training):
@@ -95,9 +95,9 @@ class Swimming(Training):
     SWIM_COEF_SHIFT: float = 1.1
     SWIM_COEF_MULTI: int = 2
 
-    def __init__(self, action, duration, weight, lenght_pool, count_pool):
+    def __init__(self, action, duration, weight, length_pool, count_pool):
         super().__init__(action, duration, weight)
-        self.lenght_pool: int = lenght_pool
+        self.lenght_pool: int = length_pool
         self.count_pool: int = count_pool
 
     """Redefining method of obtaining distance for swimming."""
@@ -113,7 +113,7 @@ class Swimming(Training):
 
     """Redefining method of obtaining spent calories for swimming"""
     def get_spent_calories(self):
-        return (self.get_mean_speed() + self.SWIM_COEF_SHIFT
+        return ((self.get_mean_speed() + self.SWIM_COEF_SHIFT)
                 * self.SWIM_COEF_MULTI * self.weight * self.duration)
 
 
