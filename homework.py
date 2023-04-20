@@ -80,13 +80,13 @@ class SportsWalking(Training):
 
     def get_mean_speed(self) -> float:
         """Get mean speed in kilometers per hour."""
-        return self.action * super().LEN_STEP / super().M_IN_KM
+        return self.action * super().LEN_STEP / self.duration / super().M_IN_KM
 
     def get_spent_calories(self):
         duration_in_m = self.duration * super().M_IN_H
         speed_in_ms = self.get_mean_speed() * self.KMH_IN_MS
 
-        return ((self.S_WALK_COEF_1 * self.weight + (speed_in_ms ** 2
+        return ((self.S_WALK_COEF_1 * self.weight + ((speed_in_ms ** 2)
                 / (self.height / self.SM_IN_M)) * self.S_WALK_COEF_2
             * self.weight) * duration_in_m)
 
