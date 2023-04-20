@@ -1,18 +1,20 @@
 class InfoMessage:
     """Info message about training"""
     def __init__(self, training_type, duration, distance, speed, calories):
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+        self.training_type: training_type
+        self.duration: duration
+        self.distance: distance
+        self.speed: speed
+        self.calories: calories
 
     def get_message(self) -> str:
-        return (f"Тип тренировки: {self.training_type}; "
-                f"Длительность: {self.duration}; "
-                f"Дистанция: {round(self.distance, 3)}; "
-                f"Ср. скорость: {self.speed}; "
-                f"Потрачено ккал: {round(self.calories, 3)}")
+        message = (f'Тип тренировки: {self.training_type}; '
+                   f'Длительность: {self.duration}; '
+                   f'Дистанция: {round(self.distance, 3)}; '
+                   f'Ср. скорость: {self.speed}; '
+                   f'Потрачено ккал: {round(self.calories, 3)}')
+
+        return message
 
 
 class Training:
