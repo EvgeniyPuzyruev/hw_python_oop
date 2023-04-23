@@ -1,18 +1,22 @@
+from dataclasses import dataclass, asdict
+from typing import List
+
+
+@dataclass
 class InfoMessage:
-    """Info message about training"""
-    def __init__(self, training_type, duration, distance, speed, calories):
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+    training_type: str
+    duration: int
+    distance: float
+    speed: float
+    calories: float
 
     def get_message(self) -> str:
-        return (f'Тип тренировки: {self.training_type}; '
-                f'Длительность: {self.duration:.3f} ч.; '
-                f'Дистанция: {self.distance:.3f} км; '
-                f'Ср. скорость: {self.speed:.3f} км/ч; '
-                f'Потрачено ккал: {self.calories:.3f}.')
+        message = (f'Тип тренировки: {self.training_type}; '
+                   f'Длительность: {self.duration:.3f} ч.; '
+                   f'Дистанция: {self.distance:.3f} км; '
+                   f'Ср. скорость: {self.speed:.3f} км/ч; '
+                   f'Потрачено ккал: {self.calories:.3f}.')
+        return message.format(**asdict(self))
 
 
 class Training:
@@ -23,8 +27,8 @@ class Training:
 
     def __init__(self,
                  action: int,
-                 duration: float,
-                 weight: float,
+                 duration: int,
+                 weight: int,
                  ) -> None:
         self.action = action
         self.duration = duration
@@ -40,7 +44,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Get count of calories spent on training ."""
-        pass
+        raise NotImplementedError
 
     def show_training_info(self) -> InfoMessage:
         """Return info message about training."""
@@ -58,9 +62,6 @@ class Running(Training):
     CAL_COEF_MULTI: int = 18
     CAL_COEF_SHIFT: float = 1.79
 
-    def __init__(self, action, duration, weight):
-        super().__init__(action, duration, weight)
-
     def get_spent_calories(self):
         return ((self.CAL_COEF_MULTI * super().get_mean_speed()
                  + self.CAL_COEF_SHIFT) * self.weight
@@ -71,8 +72,8 @@ class SportsWalking(Training):
     """Type of training: sports walking."""
     S_WALK_COEF_1: float = 0.035
     S_WALK_COEF_2: float = 0.029
-    SM_IN_M = 100
-    KMH_IN_MS = 0.278
+    SM_IN_M: int = 100
+    KMH_IN_MS: float = 0.278
 
     def __init__(self, action, duration, weight, height):
         super().__init__(action, duration, weight)
@@ -114,23 +115,31 @@ class Swimming(Training):
                 / super().M_IN_KM / self.duration)
 
     """Redefining method of obtaining spent calories for swimming"""
-    def get_spent_calories(self):
+    def get_spent_calories(self) -> float:
         return ((self.get_mean_speed() + self.SWIM_COEF_SHIFT)
                 * self.SWIM_COEF_MULTI * self.weight * self.duration)
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: List[int]) -> Training:
     """Read data received from the sensors."""
     training_type_dict = {'SWM': Swimming,
                           'RUN': Running,
                           'WLK': SportsWalking}
-    return training_type_dict[workout_type](*data)
+    err_name = 'uncorrect training type'
+    current_training = training_type_dict.get(workout_type, KeyError(err_name))
+    try:
+        return current_training(*data)
+    except TypeError:
+        print('uncorrect training type')
 
 
 def main(training: Training) -> None:
-    info = training.show_training_info()
-    message = info.get_message()
-    print(message)
+    try:
+        info = training.show_training_info()
+        message = info.get_message()
+        print(message)
+    except Exception:
+        print('moving on to the next package')
 
 
 if __name__ == '__main__':
