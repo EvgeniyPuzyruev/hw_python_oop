@@ -1,3 +1,10 @@
+# Привет, Влад!(в комментах к ревью было про то что можно писать в личку,
+# но я не понял как).
+# Хотел сказать спасибо за понятное ревью и то что все- таки заставил понять
+# датаклассес, эсдикт и немного про обработку ошибок
+# Коммент удалю, проект перепушу)
+
+
 from dataclasses import dataclass, asdict
 from typing import List
 
@@ -10,13 +17,14 @@ class InfoMessage:
     speed: float
     calories: float
 
+    MESSAGE = ('Тип тренировки: {training_type}; '
+               'Длительность: {duration:.3f} ч.; '
+               'Дистанция: {distance:.3f} км; '
+               'Ср. скорость: {speed:.3f} км/ч; '
+               'Потрачено ккал: {calories:.3f}. ')
+
     def get_message(self) -> str:
-        message = (f'Тип тренировки: {self.training_type}; '
-                   f'Длительность: {self.duration:.3f} ч.; '
-                   f'Дистанция: {self.distance:.3f} км; '
-                   f'Ср. скорость: {self.speed:.3f} км/ч; '
-                   f'Потрачено ккал: {self.calories:.3f}.')
-        return message.format(**asdict(self))
+        return self.MESSAGE.format(**asdict(self))
 
 
 class Training:
@@ -44,6 +52,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Get count of calories spent on training ."""
+        print('Method is not specified for the class')
         raise NotImplementedError
 
     def show_training_info(self) -> InfoMessage:
@@ -125,12 +134,11 @@ def read_package(workout_type: str, data: List[int]) -> Training:
     training_type_dict = {'SWM': Swimming,
                           'RUN': Running,
                           'WLK': SportsWalking}
-    err_name = 'uncorrect training type'
-    current_training = training_type_dict.get(workout_type, KeyError(err_name))
-    try:
+    current_training = training_type_dict.get(workout_type)
+    if current_training is None:
+        print(TypeError('uncorrect training type'))
+    else:
         return current_training(*data)
-    except TypeError:
-        print('uncorrect training type')
 
 
 def main(training: Training) -> None:
@@ -139,7 +147,7 @@ def main(training: Training) -> None:
         message = info.get_message()
         print(message)
     except Exception:
-        print('moving on to the next package')
+        print(Exception('moving on to the next package'))
 
 
 if __name__ == '__main__':
